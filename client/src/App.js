@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './App.css';
 import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
 import AuthPage from './pages/AuthPage';
 import RegPage from './pages/RegPage';
@@ -11,6 +10,7 @@ class App extends Component {
     render() {
         return (
             <Router>
+                <div>
                 <ul>
                     <li>
                         <Link to='/registration'> Registration</Link>
@@ -24,6 +24,7 @@ class App extends Component {
                     <Route path="/authentication/" component={AuthPage}/>
                     <Route component={NotFound}/>
                 </Switch>
+                </div>
             </Router>
         );
     }

@@ -1,34 +1,43 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import axios from 'axios';
 
 class AuthPage extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.state={
-            login:'',
-            password:''
+        this.state = {
+            login: '',
+            password: ''
         }
     }
 
-    setLoginPassword=()=>{
-console.log(this.state.login+this.state.password);
+    setLoginPassword = () => {
+        axios.post('http://localhost:3000/authentication/' + this.state.login)
+            .then((res) => {
+                console.log(res);
+            }).catch((err) => console.log(err))
     };
+
+
+    componentDidMount() {
+
+    }
 
 
     render() {
         return (
             <div>
-                <p>Registration</p>
+                <p>Authentication</p>
                 <label>
                     Login
                 </label>
-                <input type="text" onChange={(e)=>this.setState({login:e.target.value})} />
+                <input type="text" onChange={(e) => this.setState({login: e.target.value})}/>
                 <label>
                     Password
                 </label>
-                <input type="text" onChange={(e)=>this.setState({password:e.target.value})}/>
+                <input type="text" onChange={(e) => this.setState({password: e.target.value})}/>
                 <button
                     onClick={this.setLoginPassword}>
-                 ENTER
+                    ENTER
                 </button>
             </div>
         );
