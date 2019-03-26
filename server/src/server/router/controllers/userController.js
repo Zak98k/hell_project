@@ -1,48 +1,56 @@
 import {Users} from "../../models";
 
-const salt = require('./salt/salt');
+
+const bcrypt = require('bcrypt');
+const salt = require('../../services/salt/salt');
 const jwtToken = require('jsonwebtoken');
 const bc = require('bcrypt');
 const tokenSalt = salt.tokenSalt;
+const createToken = require('../../services/createToken');
 
-module.exports.sendToken=(req, res, next)=> {
+module.exports.sendToken = (req, res, next) => {
 
-}
+};
+
 
 module.exports.authentication = (req, res, next) => {
     Users.findOne({where: {email: req.body.email}})
         .then(user => {
-            if (user)
-                return bc.compare(req.body.password, user.password);
-            else {
-                res.status(403).json({
-                    success: false,
-                    message: 'Incorrect email or password'
-                });
-            }
-        })
-        .then(isValid => {
-            console.log("isValid" + isValid);
-            if (isValid) {
-                const token = jwtToken.sign({email: req.body.email}, tokenSalt, {expiresIn: '12h'});
-                console.log("token - " + token);
+            if (user) {
+                bc.compare(req.body.password, user.password)
+                    .then(result => {
+                        if (result) {
+                            const token = jwtToken.sign({email: req.body.email}, tokenSalt, {expiresIn: '12h'});
+                            console.log("bc.compare(req.body.password, user.password - " + JSON.stringify(bc.compare(req.body.password, user.password)));
+                            res.status(202)
+                                .json({
+                                    success: true,
+                                    message: 'Authorization was successful',
+                                    token: token
+                                });
+                        } else {
+                            console.log("Error response");
+                            res.status(403)
+                                .json({
+                                    success: false,
+                                    message: 'Incorrect email or password'
+                                })
+                        }
+                    })
+                    .catch(err => next(err));
 
-                res.status(202)
-                    .json({
-                        success: true,
-                        message: 'Authorization was successful',
-                        token: token
-                    });
             } else {
-                res.status(401)
+                console.log("Error response");
+                res.status(403)
                     .json({
                         success: false,
-                        message: 'Authorization was not successful'
-                    });
+                        message: 'Incorrect email or password'
+                    })
             }
-        }).catch(err => {
-        next(err)
-    });
+        })
+        .catch(err => {
+            next(err)
+        });
 
 };
 
@@ -72,7 +80,9 @@ module.exports.getAllUsers = (req, res, next) => {
         if (user)
             res.send(user);
     })
-        .catch(err => next(err));
+        .catch(err => {
+            next(err)
+        });
 };
 
 module.exports.getUserByEmail = (req, res, next) => {
@@ -90,11 +100,36 @@ module.exports.getUserByEmail = (req, res, next) => {
         });
 };
 module.exports.createUser = (req, res, next) => {
-    Users.create(req.body)
-        .then(savedUser => {
-            res.send(savedUser);
-        }).catch(err => {
-        next(err);
+
+    Users.create({
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(salt.bcryptSalt))
     })
+        .then((user) => {
+            console.log("USER - " + JSON.stringify(user));
+
+            if (user) {
+/*
+                const token1 = createToken.createToken(req, res, next);
+                console.log("token1 - " + token1);
+*/
+                const token = jwtToken.sign({email: user.email,id:user.id}, tokenSalt, {expiresIn: '12h'});
+                res.status(200);
+                res.json({
+                    success: true,
+                    message: 'User created',
+                    token: token
+                    //token1: token1
+                });
+            }
+        })
+        .catch(() => {
+            res.status(406);
+            res.json({
+                success: false,
+                message: 'Something wrong, user not created, From User controller'
+            });
+
+        })
 };
 

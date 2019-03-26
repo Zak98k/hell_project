@@ -1,5 +1,5 @@
-let jwt = require('jsonwebtoken');
-const tokenSalt = require('../router/controllers/salt/salt').tokenSalt;
+const jwt = require('jsonwebtoken');
+const tokenSalt = require('./salt/salt').tokenSalt;
 
 module.exports.verification=(req, res, next) => {
 

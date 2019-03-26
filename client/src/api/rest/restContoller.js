@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { restURL } from '../baseURL';
+import {authURL} from '../baseURL';
 
-export const getGoods = () => axios.get(`${restURL}/goods`);
-export const getOneGoods = id => axios.get(`${restURL}/goods/id/${id}`);
+export const authentication = data => axios.post(authURL,data);

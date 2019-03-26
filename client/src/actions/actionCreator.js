@@ -1,15 +1,9 @@
-import ACTION from './actiontsTypes';
+import ACTION from './actiontsTypes'
 
-export const getGoodsAction = () => ({
-  type: ACTION.GOODS_ACTION,
-});
+export const getAuthData =(data)=>{
+  return {
+      type: ACTION.AUTH_ACTION,
+      data
+  }
+};
 
-export const getSingleGoodsAction = id => ({
-  type: ACTION.SINGLE_GOODS_ACTION,
-  id,
-});
-
-export const updateSingleGoodsAction = id => ({
-  type: ACTION.SINGLE_GOODS_ACTION,
-  id,
-});

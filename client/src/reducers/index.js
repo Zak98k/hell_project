@@ -1,9 +1,12 @@
 import { combineReducers } from 'redux';
-import goodsReducers from './goodsReducers';
+import reducers from './redusers';
 
 const appReducer = combineReducers({
-  goodsReducers,
+ reducers
 });
 
-const rootReducer = (state, action) => appReducer(state, action);
+const rootReducer=(state, action)=>{
+ return appReducer(state, action);
+};
+
 export default rootReducer;

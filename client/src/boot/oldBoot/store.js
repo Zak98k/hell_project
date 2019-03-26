@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import config from './config';
-import App from '../App';
+import App from '../../App';
 
 class Store extends Component {
   constructor(props) {
