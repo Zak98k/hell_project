@@ -5,35 +5,36 @@ const AppError = require('./AppError');
 
 
 const SchemaBody = yup.object().shape({
-    email: yup.string().email('Not valid email'),
+    email: yup.string().email({status: 403, message: 'Not valid email'}),
     password: yup.string()
         .required()
 });
 
-module.exports.body = (req, res, next) => {
+module.exports.body = (err,req, res, next) => {
     SchemaBody.validate(req.body)
         .then(b => {
-            if (b)
+            if (b) {
                 next();
-            else
-                next(new AppError.lackOfUserParameters('Fill in all fields, from validationMiddleware!'));
+            } else
+                next(err.error);
         }).catch(
         (err) => {
-            res.status(403);
-            res.send(err.error)
+            console.log("ERRRRRR - " + JSON.stringify(err));
+            //res.status(403);
+            next(err.error)
         }
     );
 };
 
 
-module.exports.existEmail = (req, res, next) => {
+module.exports.existEmail = (err,req, res, next) => {
     Users.count({where: {email: req.body.email}})
         .then(c => {
             if (isNaN(c)) {
                 res.status(500);
                 res.json({
                     success: false,
-                    message: 'The email you specified is already existing, from validationMiddleware',
+                    message: 'The email you specified is already existing, from validationMiddleware'
                 });
             } else {
                 next();

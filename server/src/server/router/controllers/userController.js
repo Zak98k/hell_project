@@ -6,7 +6,6 @@ const salt = require('../../services/salt/salt');
 const jwtToken = require('jsonwebtoken');
 const bc = require('bcrypt');
 const tokenSalt = salt.tokenSalt;
-const createToken = require('../../services/createToken');
 
 module.exports.sendToken = (req, res, next) => {
 
@@ -20,7 +19,7 @@ module.exports.authentication = (req, res, next) => {
                 bc.compare(req.body.password, user.password)
                     .then(result => {
                         if (result) {
-                            const token = jwtToken.sign({email: req.body.email}, tokenSalt, {expiresIn: '12h'});
+                            const token = jwtToken.sign({id:user.id, email: user.email}, tokenSalt, {expiresIn: '12h'});
                             console.log("bc.compare(req.body.password, user.password - " + JSON.stringify(bc.compare(req.body.password, user.password)));
                             res.status(202)
                                 .json({
@@ -106,22 +105,16 @@ module.exports.createUser = (req, res, next) => {
         password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(salt.bcryptSalt))
     })
         .then((user) => {
-            console.log("USER - " + JSON.stringify(user));
-
-            if (user) {
-/*
-                const token1 = createToken.createToken(req, res, next);
-                console.log("token1 - " + token1);
-*/
+            //console.log("USER - " + JSON.stringify(user));
+            //if (user) {
                 const token = jwtToken.sign({email: user.email,id:user.id}, tokenSalt, {expiresIn: '12h'});
                 res.status(200);
                 res.json({
                     success: true,
                     message: 'User created',
                     token: token
-                    //token1: token1
                 });
-            }
+            //}
         })
         .catch(() => {
             res.status(406);
